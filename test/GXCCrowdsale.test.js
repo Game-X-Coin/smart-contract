@@ -142,34 +142,34 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
     balanceBeforeInvestment.should.be.bignumber.equal(balanceAfterRefund);
   });
 
-  describe('many user whitelisting', function () {
-    describe('accepting payments', function () {
-      it('should accept payments to whitelisted (from whichever buyers)', async function () {
-        const investmentAmount = ether(1);
-        await this.crowdsale.addToWhitelist(anotherAuthorized);
-        await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
-        await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: unauthorized }).should.be.fulfilled;
-        await this.crowdsale.buyTokens(anotherAuthorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
-        await this.crowdsale.buyTokens(anotherAuthorized, { value: investmentAmount, from: unauthorized }).should.be.fulfilled;
-      });
+  // describe('many user whitelisting', function () {
+  //   describe('accepting payments', function () {
+  //     it('should accept payments to whitelisted (from whichever buyers)', async function () {
+  //       const investmentAmount = ether(1);
+  //       await this.crowdsale.addToWhitelist(anotherAuthorized);
+  //       await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
+  //       await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: unauthorized }).should.be.fulfilled;
+  //       await this.crowdsale.buyTokens(anotherAuthorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
+  //       await this.crowdsale.buyTokens(anotherAuthorized, { value: investmentAmount, from: unauthorized }).should.be.fulfilled;
+  //     });
 
-      it('should reject payments to not whitelisted (with whichever buyers)', async function () {
-        const investmentAmount = ether(1);
-        await this.crowdsale.addToWhitelist(anotherAuthorized);
-        await this.crowdsale.send(investmentAmount).should.be.rejected;
-        await this.crowdsale.buyTokens(unauthorized, { value: investmentAmount, from: unauthorized }).should.be.rejected;
-        await this.crowdsale.buyTokens(unauthorized, { value: investmentAmount, from: authorized }).should.be.rejected;
-      });
+  //     it('should reject payments to not whitelisted (with whichever buyers)', async function () {
+  //       const investmentAmount = ether(1);
+  //       await this.crowdsale.addToWhitelist(anotherAuthorized);
+  //       await this.crowdsale.send(investmentAmount).should.be.rejected;
+  //       await this.crowdsale.buyTokens(unauthorized, { value: investmentAmount, from: unauthorized }).should.be.rejected;
+  //       await this.crowdsale.buyTokens(unauthorized, { value: investmentAmount, from: authorized }).should.be.rejected;
+  //     });
 
-      it('should reject payments to addresses removed from whitelist', async function () {
-        const investmentAmount = ether(1);
-        await this.crowdsale.addToWhitelist(anotherAuthorized);
-        await this.crowdsale.removeFromWhitelist(anotherAuthorized);
-        await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
-        await this.crowdsale.buyTokens(anotherAuthorized, { value: investmentAmount, from: authorized }).should.be.rejected;
-      });
-    });
-  });
+  //     it('should reject payments to addresses removed from whitelist', async function () {
+  //       const investmentAmount = ether(1);
+  //       await this.crowdsale.addToWhitelist(anotherAuthorized);
+  //       await this.crowdsale.removeFromWhitelist(anotherAuthorized);
+  //       await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
+  //       await this.crowdsale.buyTokens(anotherAuthorized, { value: investmentAmount, from: authorized }).should.be.rejected;
+  //     });
+  //   });
+  // });
 
 
   // describe('when goal > cap', function () {
