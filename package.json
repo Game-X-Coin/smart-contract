@@ -1,0 +1,63 @@
+{
+  "name": "smart-contract",
+  "version": "1.0.0",
+  "description": "Game X Coin - Smart Contract",
+  "files": [
+    "contracts",
+    "test"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:sol": "solium -d .",
+    "lint:sol:fix": "solium -d . --fix",
+    "lint:all": "yarn run lint && yarn run lint:sol",
+    "lint:all:fix": "yarn run lint:fix && yarn run lint:sol:fix",
+    "console": "truffle console",
+    "coverage": "scripts/coverage.sh",
+    "test": "scripts/test.sh"
+  },
+  "keywords": [
+    "solidity",
+    "erc20",
+    "smart contract"
+  ],
+  "author": "game-x-coin",
+  "license": "MIT",
+  "homepage": "https://github.com/Game-X-Coin/smart-contract",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Game-X-Coin/smart-contract"
+  },
+  "bugs": {
+    "url": "https://github.com/Game-X-Coin/smart-contract/issues"
+  },
+  "devDependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.2",
+    "coveralls": "^3.0.1",
+    "dotenv": "^5.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^12.0.0-alpha.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "ethereumjs-testrpc": "^6.0.3",
+    "ethereumjs-util": "^5.2.0",
+    "ethjs-abi": "^0.2.1",
+    "ganache-cli": "^6.1.0",
+    "openzeppelin-solidity": "1.9.0",
+    "solidity-coverage": "^0.5.0",
+    "solium": "^1.1.7",
+    "truffle": "^4.1.8",
+    "truffle-hdwallet-provider": "^0.0.3"
+  }
+}
