@@ -28,6 +28,7 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
   beforeEach(async function () {
     this.openingTime = latestTime() + duration.weeks(1);
     this.closingTime = this.openingTime + duration.weeks(1);
+    this.beforeEndTime = this.closingTime - duration.hours(1);
     this.afterClosingTime = this.closingTime + duration.seconds(1);
 
     this.token = await GameXCoin.new();
@@ -42,8 +43,9 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
     );
     this.totalSupply = await this.token.totalSupply();
     await this.token.transferOwnership(this.crowdsale.address);
-    await this.token.transfer(this.crowdsale.address, this.totalSupply);
-    await this.crowdsale.addToWhitelist(authorized);
+    // await this.token.transfer(this.crowdsale.address, this.totalSupply);
+    await this.token.transfer(this.crowdsale.address, CAP);
+    await this.crowdsale.addManyToWhitelist([authorized, anotherAuthorized]);
   });
 
   it('should create crowdsale with correct parameters', async function () {
@@ -73,9 +75,15 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
 
     await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
     await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: unauthorized }).should.be.fulfilled;
+
+    (await this.token.balanceOf(authorized)).should.be.bignumber.equal(0);
+
+    await increaseTimeTo(this.afterClosingTime);
+
+    // await this.crowdsale.withdrawTokens({ from: authorized }).should.be.fulfilled;
     
-    (await this.token.balanceOf(authorized)).should.be.bignumber.equal(expectedTokenAmount.mul(2));
-    (await this.token.balanceOf(unauthorized)).should.be.bignumber.equal(0);
+    // (await this.token.balanceOf(authorized)).should.be.bignumber.equal(expectedTokenAmount.mul(2));
+    // (await this.token.balanceOf(unauthorized)).should.be.bignumber.equal(0);
   });
 
   it('should reject payments to not whitelisted (from whichever buyers)', async function () {

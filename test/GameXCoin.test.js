@@ -1,6 +1,13 @@
 import decodeLogs from 'openzeppelin-solidity/test/helpers/decodeLogs';
 const GameXCoin = artifacts.require('GameXCoin');
 
+const BigNumber = web3.BigNumber;
+
+require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should();
+
 contract('GameXCoin', accounts => {
   let token;
   const creator = accounts[0];
@@ -22,6 +29,11 @@ contract('GameXCoin', accounts => {
   it('has 18 decimals', async function () {
     const decimals = await token.decimals();
     assert(decimals.eq(18));
+  });
+
+  it('has 10 billion tokens', async function () {
+    const initialSupply = await token.INITIAL_SUPPLY();
+    assert(initialSupply.should.be.bignumber.equal(new BigNumber(1e27)));
   });
 
   it('assigns the initial total supply to the creator', async function () {
