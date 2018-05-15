@@ -19,6 +19,8 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
   const RATE = new BigNumber(40);
   const GOAL = ether(10);
   const CAP = ether(20);
+  const investmentAmount = ether(1);
+  const expectedTokenAmount = RATE.mul(investmentAmount);
 
   before(async function () {
     // Advance to the next block to correctly read time in the solidity "now" function interpreted by ganache
@@ -44,7 +46,7 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
     this.totalSupply = await this.token.totalSupply();
     await this.token.transferOwnership(this.crowdsale.address);
     // await this.token.transfer(this.crowdsale.address, this.totalSupply);
-    await this.token.transfer(this.crowdsale.address, CAP);
+    await this.token.transfer(this.crowdsale.address, CAP.mul(RATE));
     await this.crowdsale.addManyToWhitelist([authorized, anotherAuthorized]);
   });
 
@@ -69,8 +71,6 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
 
   // describe('accepting payments during the sale', async function () {
   it('should accept payments to whitelisted (from whichever buyers)', async function () {
-    const investmentAmount = ether(1);
-    const expectedTokenAmount = RATE.mul(investmentAmount);
     await increaseTimeTo(this.openingTime);
 
     await this.crowdsale.buyTokens(authorized, { value: investmentAmount, from: authorized }).should.be.fulfilled;
@@ -80,14 +80,13 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
 
     await increaseTimeTo(this.afterClosingTime);
 
-    // await this.crowdsale.withdrawTokens({ from: authorized }).should.be.fulfilled;
+    await this.crowdsale.withdrawTokens({ from: authorized }).should.be.fulfilled;
     
-    // (await this.token.balanceOf(authorized)).should.be.bignumber.equal(expectedTokenAmount.mul(2));
-    // (await this.token.balanceOf(unauthorized)).should.be.bignumber.equal(0);
+    (await this.token.balanceOf(authorized)).should.be.bignumber.equal(expectedTokenAmount.mul(2));
+    (await this.token.balanceOf(unauthorized)).should.be.bignumber.equal(0);
   });
 
   it('should reject payments to not whitelisted (from whichever buyers)', async function () {
-    const investmentAmount = ether(1);
     await increaseTimeTo(this.openingTime);
 
     await this.crowdsale.send(investmentAmount).should.be.rejected;
@@ -96,7 +95,6 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
   });
 
   it('should reject payments to addresses removed from whitelist', async function () {
-    const investmentAmount = ether(1);
     await increaseTimeTo(this.openingTime);
     
     await this.crowdsale.removeFromWhitelist(authorized);
