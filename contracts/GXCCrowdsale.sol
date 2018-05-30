@@ -23,4 +23,8 @@ contract GXCCrowdsale is CappedCrowdsale, RefundableCrowdsale {
     require(_cap <= _token.totalSupply());
     require(_goal <= _cap);
   }
+
+  function setTokenRate (uint256 _rate) public onlyOwner {
+    rate = _rate;
+  }
 }

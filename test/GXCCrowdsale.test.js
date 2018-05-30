@@ -105,4 +105,17 @@ contract('GXCCrowdsale', function ([_, owner, wallet, authorized, unauthorized, 
     const balanceAfterRefund = web3.eth.getBalance(authorized);
     balanceBeforeInvestment.should.be.bignumber.equal(balanceAfterRefund);
   });
+
+  describe('setTokenRate()', () => {
+    after(async function () {
+      await this.crowdsale.setTokenRate(RATE);
+    });
+
+    it('should change token rate', async function () {
+      const newRate = new BigNumber(20);
+      await this.crowdsale.setTokenRate(newRate);
+      const changedRate = await this.crowdsale.rate();
+      changedRate.should.be.deep.equal(newRate);
+    });
+  });
 });
