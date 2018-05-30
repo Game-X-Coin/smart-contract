@@ -12,8 +12,15 @@ contract GameXCoin is PausableToken {
   uint256 public constant INITIAL_SUPPLY = 1000000000 * (10 ** uint256(decimals));
 
   constructor() public {
+    assert(INITIAL_SUPPLY > 0);
     totalSupply_ = INITIAL_SUPPLY;
-    balances[msg.sender] = INITIAL_SUPPLY;
-    emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
+    
+    mint(msg.sender, INITIAL_SUPPLY);
+    assert(totalSupply_ == INITIAL_SUPPLY);
+  }
+
+  function mint (address _to, uint256 _amount) internal {
+    balances[_to] = _amount;
+    emit Transfer(0x0, _to, _amount);
   }
 }
