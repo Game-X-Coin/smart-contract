@@ -51,9 +51,16 @@ module.exports = {
     rinkeby: {
       host: 'localhost', // Connect to geth on the specified
       port: 8545,
-      from: '0x2c01f2b76b9ae588a22e1d8ef3a0662e4e15731f',
+      from: '0x5aa78c7b46597f9ef46fa48f1255078fb85bf6b6',
       network_id: 4,
       gas: 4612388 // Gas limit used for deploys
+    },
+    mocha: {
+      reporter: 'eth-gas-reporter',
+      reporterOptions: {
+        currency: 'KRW',
+        gasPrice: 5
+      }
     }
   },
 };

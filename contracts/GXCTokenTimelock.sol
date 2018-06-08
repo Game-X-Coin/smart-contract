@@ -22,7 +22,7 @@ contract GXCTokenTimelock {
     return balance[_beneficiary];
   }
 
-  function release () onlyOwner public {
+  function release () public {
     token.transfer(msg.sender, balance[msg.sender]);
   }
 }

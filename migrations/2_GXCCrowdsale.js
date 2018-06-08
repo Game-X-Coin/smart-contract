@@ -1,6 +1,5 @@
 const GXCToken = artifacts.require('GXCToken');
 const GXCSaleBase = artifacts.require('GXCSaleBase');
-const GXCTokenTimelock = artifacts.require('GXCTokenTimelock');
 
 const openingTime = web3.eth.getBlock('latest').timestamp;
 const closingTime = openingTime + (86400 * 1); // days
@@ -13,8 +12,7 @@ const goal = new web3.BigNumber(web3.toWei(100, 'ether'));
 module.exports = async (deployer) => {
   try {
     await deployer.deploy(GXCToken);
-    await deployer.deploy(GXCTokenTimelock, GXCToken.address, releaseTime);
-    await deployer.deploy(GXCSaleBase, RATE, wallet, cap, goal, openingTime, closingTime, GXCToken.address, GXCTokenTimelock.address);
+    await deployer.deploy(GXCSaleBase, RATE, wallet, cap, goal, openingTime, closingTime, releaseTime, GXCToken.address);
   } catch (err) {
     console.log(err);
   }
