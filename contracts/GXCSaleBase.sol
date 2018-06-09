@@ -58,7 +58,7 @@ contract GXCSaleBase is CappedCrowdsale, RefundableCrowdsale {
   }
 
   function getBonusAmount()
-    internal view returns (uint256)
+    internal returns (uint256)
   {
     uint256 weiAmount = msg.value;
     uint256 bonusRate = getBonusRate();
@@ -66,11 +66,8 @@ contract GXCSaleBase is CappedCrowdsale, RefundableCrowdsale {
     if (bonusRate == 0) {
       return 0;
     }
-    uint256 bonusAmount = weiAmount * bonusRate / 100; 
-    
-    if (bonusAmount / bonusRate == weiAmount) {
-      return 0;
-    }
+
+    uint256 bonusAmount = weiAmount.mul(bonusRate).div(100);
 
     return bonusAmount;
   }
@@ -88,7 +85,8 @@ contract GXCSaleBase is CappedCrowdsale, RefundableCrowdsale {
     token.transfer(_beneficiary, _tokenAmount);
     uint256 bonusAmount = getBonusAmount();
     if (bonusAmount > 0) {
-      lockedBonusTokens[msg.sender] += bonusAmount;
+      uint256 currentBonusToken = lockedBonusTokens[msg.sender];
+      lockedBonusTokens[msg.sender] = bonusAmount.add(currentBonusToken);
       buyers.push(msg.sender);
     }
   }

@@ -164,7 +164,7 @@ contract('GXCSaleBase', async function ([tokenOwner, saleOwner, wallet, investor
   describe('release', function () {
     it('should release bonus tokens', async function () {
       await increaseTimeTo(this.openingTime);
-      const valueAmount = 1;
+      const valueAmount = 0.1;
       const value = ether(valueAmount);
       const valueToWei = web3.toWei(valueAmount, 'ether');
       const bonusAmount = valueToWei * RATE * await this.saleBase.BONUS_RATE() / 100;
