@@ -16,8 +16,10 @@ const GXCSaleBase = artifacts.require('GXCSaleBase');
 contract('GXCSaleBase', async function ([tokenOwner, saleOwner, wallet, investor, purchaser, another]) {
 
   const RATE = new BigNumber(1);
-  const GOAL = ether(1500);
-  const CAP = ether(2000);
+  const GOAL = ether(10);
+  const CAP = ether(20);
+  const USER_MIN_CAPPED_LIMIT = ether(0.1);
+  const USER_MAX_CAPPED_LIMIT = ether(100);
 
   before(async function () {
     await advanceBlock();
@@ -30,7 +32,7 @@ contract('GXCSaleBase', async function ([tokenOwner, saleOwner, wallet, investor
     this.releaseTime = this.closingTime + duration.weeks(1);
     this.afterReleaseTime = this.releaseTime + duration.seconds(1);
     this.token = await GXCToken.new({ from: tokenOwner });
-    this.saleBase = await GXCSaleBase.new(RATE, wallet, CAP, GOAL, this.openingTime, this.closingTime, this.releaseTime, this.token.address, { from: saleOwner });
+    this.saleBase = await GXCSaleBase.new(RATE, wallet, CAP, GOAL, this.openingTime, this.closingTime, this.releaseTime, this.token.address, USER_MIN_CAPPED_LIMIT, USER_MAX_CAPPED_LIMIT, { from: saleOwner });
     const PRESALE_SUPPLY = await this.saleBase.PRESALE_SUPPLY();
     await this.token.initSale(this.saleBase.address, PRESALE_SUPPLY, { from: tokenOwner });
   });
@@ -44,6 +46,8 @@ contract('GXCSaleBase', async function ([tokenOwner, saleOwner, wallet, investor
       const goal = await this.saleBase.goal();
       const cap = await this.saleBase.cap();
       const token = await this.saleBase.token();
+      const userMinCappedLimit = await this.saleBase.userCappedMinLimit();
+      const userCappedMaxLimit = await this.saleBase.userCappedMaxLimit();
 
       openingTime.should.be.bignumber.equal(openingTime);
       closingTime.should.be.bignumber.equal(closingTime);
@@ -52,6 +56,8 @@ contract('GXCSaleBase', async function ([tokenOwner, saleOwner, wallet, investor
       goal.should.be.bignumber.equal(GOAL);
       cap.should.be.bignumber.equal(CAP);
       token.should.be.equal(this.token.address);
+      userMinCappedLimit.should.be.deep.equal(USER_MIN_CAPPED_LIMIT);
+      userCappedMaxLimit.should.be.deep.equal(USER_MAX_CAPPED_LIMIT);
     });
   });
 
@@ -80,16 +86,25 @@ contract('GXCSaleBase', async function ([tokenOwner, saleOwner, wallet, investor
     });
   });
 
-  describe('buyTokens', function () {
+  describe('userCapped', function () {
     beforeEach(async function () {
       await increaseTimeTo(this.openingTime);
     });
 
-    xit('should be able to buy when send to small ether', async function () {
-      const value = web3.toWei(0.0000000001, 'ether');
-      await this.saleBase.buyTokens(investor, { value, from: investor });
-      const investorBalance = await this.token.balanceOf(investor);
-      console.log(`---------------- : ${investorBalance}`);
+    it('should not be able to buy when send under min ether limit', async function () {
+      const value = web3.toWei(0.01, 'ether');
+      await this.saleBase.buyTokens(investor, { value, from: investor }).should.be.rejectedWith(EVMRevert);
+    });
+
+    it('should not be able to buy when send over max ether limit', async function () {
+      const value = USER_MAX_CAPPED_LIMIT.toNumber() + ether(1).toNumber();
+      await this.saleBase.buyTokens(investor, { value, from: investor }).should.be.rejectedWith(EVMRevert);
+    });
+  });
+
+  describe('buyTokens', function () {
+    beforeEach(async function () {
+      await increaseTimeTo(this.openingTime);
     });
 
     it('should buy tokens', async function () {
@@ -164,7 +179,7 @@ contract('GXCSaleBase', async function ([tokenOwner, saleOwner, wallet, investor
   describe('release', function () {
     it('should release bonus tokens', async function () {
       await increaseTimeTo(this.openingTime);
-      const valueAmount = 0.1;
+      const valueAmount = 1;
       const value = ether(valueAmount);
       const valueToWei = web3.toWei(valueAmount, 'ether');
       const bonusAmount = valueToWei * RATE * await this.saleBase.BONUS_RATE() / 100;

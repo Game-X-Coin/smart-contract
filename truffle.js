@@ -53,7 +53,8 @@ module.exports = {
       port: 8545,
       from: '0x5aa78c7b46597f9ef46fa48f1255078fb85bf6b6',
       network_id: 4,
-      gas: 4612388 // Gas limit used for deploys
+      gas: 0xfffffffffff, // Gas limit used for deploys
+      gasPrice: 0x01
     },
     mocha: {
       reporter: 'eth-gas-reporter',
